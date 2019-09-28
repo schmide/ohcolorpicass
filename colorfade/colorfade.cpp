@@ -16,13 +16,15 @@ struct color {
    COLORTYPE r, g, b;
 };
 
-color onColor = { 255,255,255 }, offColor = { 0,0,0 }, currentColor = offColor;
+color onColor = { 255,255,255 }, 
+      offColor = { 0,0,0 }, 
+      currentColor = offColor;
 STEPTYPE steps = 32;
 bool flux = true;
 
 void CheckUnderflow(COLORTYPE &delta, COLORTYPE &oldDelta, COLORTYPE &current, COLORTYPE &dest)
 {
-   if (delta < FLOOR) // underflow compensation 
+   if (abs(delta) < FLOOR) // underflow compensation 
       if (oldDelta < 0)
          delta = -FLOOR;
       else
