@@ -64,7 +64,7 @@ void UpdateColor()
    vectDot += (dest.b - currentColor.b) * deltaColor.b;
    if ( vectDot <= 0 ) {
       currentColor = dest;
-      flux = !flux; // no flux given
+//      flux = !flux; // no flux given
    } else {
       currentColor.r += deltaColor.r;
       currentColor.g += deltaColor.g;
