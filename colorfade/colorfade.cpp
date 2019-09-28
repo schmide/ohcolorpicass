@@ -16,8 +16,8 @@ struct color {
    COLORTYPE r, g, b;
 };
 
-color onColor = { 255,255,255 }, 
-      offColor = { 0,0,0 }, 
+color onColor = { 255, 200 ,0 }, 
+      offColor = { 0, 0, 80 }, 
       currentColor = offColor;
 STEPTYPE steps = 32;
 bool flux = true;
@@ -59,15 +59,21 @@ void UpdateColor()
    CheckUnderflow(deltaColor.r, colorSpan.r, currentColor.r, dest.r);
    CheckUnderflow(deltaColor.b, colorSpan.b, currentColor.b, dest.b);
    CheckUnderflow(deltaColor.g, colorSpan.g, currentColor.g, dest.g);
-   DOTTYPE vectDot = (dest.r - currentColor.r) * deltaColor.r + (dest.g - currentColor.g) * deltaColor.g + (dest.b - currentColor.b) * deltaColor.b;
+   DOTTYPE vectDot = (dest.r - currentColor.r) * deltaColor.r;
+   vectDot += (dest.g - currentColor.g) * deltaColor.g;
+   vectDot += (dest.b - currentColor.b) * deltaColor.b;
    if ( vectDot <= 0 ) {
       currentColor = dest;
-//      flux = !flux; // no flux given
+      flux = !flux; // no flux given
    } else {
       currentColor.r += deltaColor.r;
       currentColor.g += deltaColor.g;
       currentColor.b += deltaColor.b;
    }
+   // integers round down every cycle and dot products are not kind to integers.
+   currentColor.r = currentColor.r < 0 ? 0 : currentColor.r;
+   currentColor.g = currentColor.g < 0 ? 0 : currentColor.g;
+   currentColor.b = currentColor.b < 0 ? 0 : currentColor.b;
 }
 
 int main()
