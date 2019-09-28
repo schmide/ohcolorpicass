@@ -6,11 +6,11 @@
 
 // Color and step should be at least 16 bits 
 // dot product can overflow but overflow causes capture.
-// sigma can be very low for floats
+// floor can be very low for floats
 #define COLORTYPE short int  
 #define STEPTYPE short int  
 #define DOTTYPE long int  
-#define SIGMA 1
+#define FLOOR 1
 
 struct color {
    COLORTYPE r, g, b;
@@ -22,12 +22,12 @@ bool flux = true;
 
 void CheckUnderflow(COLORTYPE &delta, COLORTYPE &oldDelta, COLORTYPE &current, COLORTYPE &dest)
 {
-   if (delta * delta < SIGMA) // underflow compensation 
+   if (delta < FLOOR) // underflow compensation 
       if (oldDelta < 0)
-         delta = -SIGMA;
+         delta = -FLOOR;
       else
          if (oldDelta > 0)
-            delta = SIGMA;
+            delta = FLOOR;
          else
             current = dest;
 }
