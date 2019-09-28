@@ -24,14 +24,17 @@ bool flux = true;
 
 void CheckUnderflow(COLORTYPE &delta, COLORTYPE &oldDelta, COLORTYPE &current, COLORTYPE &dest)
 {
-   if (abs(delta) < FLOOR) // underflow compensation 
-      if (oldDelta < 0)
+   if (abs(delta) < FLOOR) {// underflow compensation 
+      if (oldDelta < 0) {
          delta = -FLOOR;
-      else
-         if (oldDelta > 0)
+      } else {
+         if (oldDelta > 0) {
             delta = FLOOR;
-         else
+         } else {
             current = dest;
+         }
+      }
+   }
 }
 
 void UpdateColor()
