@@ -39,10 +39,10 @@ void CheckUnderflow(COLORTYPE &delta, COLORTYPE &oldDelta, COLORTYPE &current, C
 
 void UpdateColor()
 {
-   color deltaColor;
-   deltaColor.r = onColor.r - offColor.r;
-   deltaColor.g = onColor.g - offColor.g;
-   deltaColor.b = onColor.b - offColor.b;
+   color colorSpan;
+   colorSpan.r = onColor.r - offColor.r;
+   colorSpan.g = onColor.g - offColor.g;
+   colorSpan.b = onColor.b - offColor.b;
    STEPTYPE stepsDirection;
    color dest;
    if (flux) {
@@ -52,13 +52,13 @@ void UpdateColor()
       dest = offColor;
       stepsDirection = -steps;
    }
-   color oldDeltaColor = deltaColor;
-   deltaColor.r /= stepsDirection;
-   deltaColor.g /= stepsDirection;
-   deltaColor.b /= stepsDirection;
-   CheckUnderflow(deltaColor.r, oldDeltaColor.r, currentColor.r, deltaColor.r);
-   CheckUnderflow(deltaColor.b, oldDeltaColor.b, currentColor.b, deltaColor.b);
-   CheckUnderflow(deltaColor.g, oldDeltaColor.g, currentColor.g, deltaColor.g);
+   color deltaColor;
+   deltaColor.r = colorSpan.r / stepsDirection;
+   deltaColor.g = colorSpan.g / stepsDirection;
+   deltaColor.b = colorSpan.b / stepsDirection;
+   CheckUnderflow(deltaColor.r, colorSpan.r, currentColor.r, dest.r);
+   CheckUnderflow(deltaColor.b, colorSpan.b, currentColor.b, dest.b);
+   CheckUnderflow(deltaColor.g, colorSpan.g, currentColor.g, dest.g);
    DOTTYPE vectDot = (dest.r - currentColor.r) * deltaColor.r + (dest.g - currentColor.g) * deltaColor.g + (dest.b - currentColor.b) * deltaColor.b;
    if ( vectDot <= 0 ) {
       currentColor = dest;
