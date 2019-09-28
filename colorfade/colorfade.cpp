@@ -56,9 +56,9 @@ void UpdateColor()
    deltaColor.r /= stepsDirection;
    deltaColor.g /= stepsDirection;
    deltaColor.b /= stepsDirection;
-   CheckUnderflow(deltaColor.r, oldDeltaColor.r , currentColor.r, deltaColor.r);
-   CheckUnderflow(deltaColor.b, oldDeltaColor.b , currentColor.b, deltaColor.b);
-   CheckUnderflow(deltaColor.g, oldDeltaColor.g , currentColor.g, deltaColor.g);
+   CheckUnderflow(deltaColor.r, oldDeltaColor.r, currentColor.r, deltaColor.r);
+   CheckUnderflow(deltaColor.b, oldDeltaColor.b, currentColor.b, deltaColor.b);
+   CheckUnderflow(deltaColor.g, oldDeltaColor.g, currentColor.g, deltaColor.g);
    DOTTYPE vectDot = (dest.r - currentColor.r) * deltaColor.r + (dest.g - currentColor.g) * deltaColor.g + (dest.b - currentColor.b) * deltaColor.b;
    if ( vectDot <= 0 ) {
       currentColor = dest;
