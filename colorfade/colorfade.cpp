@@ -39,10 +39,10 @@ void CheckUnderflow(COLORTYPE &delta, COLORTYPE &oldDelta, COLORTYPE &current, C
 
 void UpdateColor()
 {
-   color deltaColor = onColor;
-   deltaColor.r -= offColor.r;
-   deltaColor.g -= offColor.g;
-   deltaColor.b -= offColor.b;
+   color deltaColor;
+   deltaColor.r = onColor.r - offColor.r;
+   deltaColor.g = onColor.g - offColor.g;
+   deltaColor.b = onColor.b - offColor.b;
    STEPTYPE stepsDirection;
    color dest;
    if (flux) {
@@ -59,9 +59,7 @@ void UpdateColor()
    CheckUnderflow(deltaColor.r, oldDeltaColor.r , currentColor.r, deltaColor.r);
    CheckUnderflow(deltaColor.b, oldDeltaColor.b , currentColor.b, deltaColor.b);
    CheckUnderflow(deltaColor.g, oldDeltaColor.g , currentColor.g, deltaColor.g);
-   DOTTYPE vectDot = (dest.r - currentColor.r) * deltaColor.r; 
-   vectDot += (dest.g - currentColor.g) * deltaColor.g;
-   vectDot += (dest.b - currentColor.b) * deltaColor.b;
+   DOTTYPE vectDot = (dest.r - currentColor.r) * deltaColor.r + (dest.g - currentColor.g) * deltaColor.g + (dest.b - currentColor.b) * deltaColor.b;
    if ( vectDot <= 0 ) {
       currentColor = dest;
 //      flux = !flux; // no flux given
