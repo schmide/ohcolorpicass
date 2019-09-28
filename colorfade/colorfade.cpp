@@ -67,7 +67,6 @@ void UpdateColor()
    }
 }
 
-
 int main()
 {
    while (true) {
@@ -75,42 +74,3 @@ int main()
    }
 }
 
-/*
-class color {
-public:
-   color &operator+=(color otherColor) { r += otherColor.r; g += otherColor.g; b += otherColor.b; return *this;  }
-   color &operator-=(color otherColor) { r -= otherColor.r; g -= otherColor.g; b -= otherColor.b; return *this;  }
-   color &operator*=(int mult ) { r *= mult; g *= mult; b *= mult; return *this;  }
-   color &operator/=(int divisor ) { r /= divisor; g /= divisor; b /= divisor; return *this;  }
-   int r, g, b;
-};
-
-color onColor = { 255,0,0 }, offColor = { 0,255,0 }, currentColor = onColor;
-
-int steps = 4;
-
-bool flux = false;
-
-void UpdateColor()
-{
-   color deltaColor = onColor;
-   deltaColor -= offColor;
-   deltaColor /= flux ? steps : -steps;
-   color dest = flux ? onColor : offColor;
-   if (abs(currentColor.r - dest.r) < abs(deltaColor.r) || abs(currentColor.g - dest.g) < abs(deltaColor.g) || abs(currentColor.b - dest.b) < abs(deltaColor.b) ) {
-      currentColor = dest;
-   } else {
-      currentColor += deltaColor;
-   }
-}
-
-
-int main()
-{
-   while (true) {
-      UpdateColor();
-   }
-    std::cout << "Hello World!\n"; 
-}
-
-*/
