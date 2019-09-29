@@ -20,8 +20,11 @@ struct color {
 
 STEPTYPE scalor = SCALOR;
 STEPTYPE rate = RATE;
-color onColor = { 255 * SCALOR, 20 * SCALOR , 0 * SCALOR },
-offColor = { 0 * SCALOR, 0 * SCALOR, 255 * SCALOR },
+#define FIXCOLOR(a) ((a) * scalor)
+#define UNFIXCOLOR(a) ((a) / scalor)
+#define SETRATE(a) ((a) / rate)
+color onColor = { FIXCOLOR(255), FIXCOLOR(20), FIXCOLOR(0) },
+offColor = { FIXCOLOR(0) , FIXCOLOR(0), FIXCOLOR(255) },
 currentColor = offColor;
 bool flux = true;
 
@@ -48,9 +51,9 @@ void UpdateColor()
    colorSpan.b = onColor.b - offColor.b;
    color dest;
    color deltaColor;
-   deltaColor.r = colorSpan.r / rate;
-   deltaColor.g = colorSpan.g / rate;
-   deltaColor.b = colorSpan.b / rate;
+   deltaColor.r = SETRATE(colorSpan.r);
+   deltaColor.g = SETRATE(colorSpan.g);
+   deltaColor.b = SETRATE(colorSpan.b);
    if (flux) {
       dest = onColor;
    } else {
@@ -71,20 +74,19 @@ void UpdateColor()
       currentColor.b = dest.b;
       flux = !flux; // no flux given
    } else {
-      currentColor.r = (currentColor.r + deltaColor.r);
-      currentColor.g = (currentColor.g + deltaColor.g);
-      currentColor.b = (currentColor.b + deltaColor.b);
+      currentColor.r = currentColor.r + deltaColor.r;
+      currentColor.g = currentColor.g + deltaColor.g;
+      currentColor.b = currentColor.b + deltaColor.b;
    }
    // integers round down every cycle and dot products are not kind to integers.
    currentColor.r = currentColor.r < 0 ? 0 : currentColor.r;
    currentColor.g = currentColor.g < 0 ? 0 : currentColor.g;
    currentColor.b = currentColor.b < 0 ? 0 : currentColor.b;
    color outputColor;
-   outputColor.r = currentColor.r / SCALOR;
-   outputColor.g = currentColor.g / SCALOR;
-   outputColor.b = currentColor.b / SCALOR;
+   outputColor.r = UNFIXCOLOR(currentColor.r);
+   outputColor.g = UNFIXCOLOR(currentColor.g);
+   outputColor.b = UNFIXCOLOR(currentColor.b);
    flux = flux;
-
 }
 
 int main()
