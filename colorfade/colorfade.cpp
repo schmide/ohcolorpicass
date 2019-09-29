@@ -1,7 +1,6 @@
 // colorfade.cpp : Just to Bother
 //
 
-#include "pch.h"
 #include <iostream>
 #include "colorfade.h"
 
