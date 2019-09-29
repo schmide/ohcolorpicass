@@ -59,22 +59,22 @@ void CheckUnderflow(COLORTYPE &delta, COLORTYPE &span, COLORTYPE &current, COLOR
 void UpdateColor()
 {
    color colorSpan;
-   colorSpan.r = onColor.r - offColor.r;
-   colorSpan.g = onColor.g - offColor.g;
-   colorSpan.b = onColor.b - offColor.b;
+   color dest;
+   if (flux) {
+      dest = onColor;
+      colorSpan.r = onColor.r - offColor.r;
+      colorSpan.g = onColor.g - offColor.g;
+      colorSpan.b = onColor.b - offColor.b;
+   } else {
+      dest = offColor;
+      colorSpan.r = offColor.r - onColor.r;
+      colorSpan.g = offColor.g - onColor.g;
+      colorSpan.b = offColor.b - onColor.b;
+   }
    color deltaColor;
    deltaColor.r = SETRATE(colorSpan.r);
    deltaColor.g = SETRATE(colorSpan.g);
    deltaColor.b = SETRATE(colorSpan.b);
-   color dest;
-   if (flux) {
-      dest = onColor;
-   } else {
-      dest = offColor;
-      deltaColor.r = -deltaColor.r;
-      deltaColor.g = -deltaColor.g;
-      deltaColor.b = -deltaColor.b;
-   }
    CheckUnderflow(deltaColor.r, colorSpan.r, currentColor.r, dest.r);
    CheckUnderflow(deltaColor.b, colorSpan.b, currentColor.b, dest.b);
    CheckUnderflow(deltaColor.g, colorSpan.g, currentColor.g, dest.g);
@@ -82,10 +82,8 @@ void UpdateColor()
    vectDot += (dest.g - currentColor.g) * deltaColor.g;
    vectDot += (dest.b - currentColor.b) * deltaColor.b;
    if ( vectDot <= 0 ) {
-      currentColor.r = dest.r;
-      currentColor.g = dest.g;
-      currentColor.b = dest.b;
-      flux = !flux; // no flux given
+      currentColor = dest;
+//      flux = !flux; // no flux given
    } else {
       currentColor.r = currentColor.r + deltaColor.r;
       currentColor.g = currentColor.g + deltaColor.g;
@@ -99,7 +97,7 @@ void UpdateColor()
    outputColor.r = UNFIXCOLOR(currentColor.r);
    outputColor.g = UNFIXCOLOR(currentColor.g);
    outputColor.b = UNFIXCOLOR(currentColor.b);
-   flux = flux;
+//   flux = flux;
 }
 
 int main()
