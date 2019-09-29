@@ -10,9 +10,16 @@
 #define COLORTYPE short int  
 #define STEPTYPE short int  
 #define DOTTYPE long int  
-#define FLOOR 4
+#define USESHIFT
+#ifdef USESHIFT
+#define FLOOR 1
+#define SCALOR 7
+#define RATE 5
+#else
+#define FLOOR 1
 #define SCALOR 128
 #define RATE 32
+#endif
 
 struct color {
    COLORTYPE r, g, b;
@@ -20,9 +27,15 @@ struct color {
 
 STEPTYPE scalor = SCALOR;
 STEPTYPE rate = RATE;
+#ifdef USESHIFT
+#define FIXCOLOR(a) ((a) << scalor)
+#define UNFIXCOLOR(a) ((a) >> scalor)
+#define SETRATE(a) ((a) >> rate)
+#else
 #define FIXCOLOR(a) ((a) * scalor)
 #define UNFIXCOLOR(a) ((a) / scalor)
 #define SETRATE(a) ((a) / rate)
+#endif
 color onColor = { FIXCOLOR(255), FIXCOLOR(20), FIXCOLOR(0) },
 offColor = { FIXCOLOR(0) , FIXCOLOR(0), FIXCOLOR(255) },
 currentColor = offColor;
@@ -49,18 +62,18 @@ void UpdateColor()
    colorSpan.r = onColor.r - offColor.r;
    colorSpan.g = onColor.g - offColor.g;
    colorSpan.b = onColor.b - offColor.b;
-   color dest;
    color deltaColor;
    deltaColor.r = SETRATE(colorSpan.r);
    deltaColor.g = SETRATE(colorSpan.g);
    deltaColor.b = SETRATE(colorSpan.b);
+   color dest;
    if (flux) {
       dest = onColor;
    } else {
       dest = offColor;
-      deltaColor.r = -deltaColor.r ;
-      deltaColor.g = -deltaColor.g ;
-      deltaColor.b = -deltaColor.b ;
+      deltaColor.r = -deltaColor.r;
+      deltaColor.g = -deltaColor.g;
+      deltaColor.b = -deltaColor.b;
    }
    CheckUnderflow(deltaColor.r, colorSpan.r, currentColor.r, dest.r);
    CheckUnderflow(deltaColor.b, colorSpan.b, currentColor.b, dest.b);
