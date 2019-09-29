@@ -3,43 +3,42 @@
 
 #include "pch.h"
 #include <iostream>
-
-// Color and step should be at least 16 bits 
-// dot product can overflow but overflow causes capture.
-// floor can be very low for floats
-#define COLORTYPE short int  
-#define STEPTYPE short int  
-#define DOTTYPE long int  
-#define USESHIFT
-#ifdef USESHIFT
-#define FLOOR 1
-#define SCALOR 7
-#define RATE 5
-#else
-#define FLOOR 1
-#define SCALOR 128
-#define RATE 32
-#endif
-
-struct color {
-   COLORTYPE r, g, b;
-};
+#include "colorfade.h"
 
 STEPTYPE scalor = SCALOR;
 STEPTYPE rate = RATE;
-#ifdef USESHIFT
-#define FIXCOLOR(a) ((a) << scalor)
-#define UNFIXCOLOR(a) ((a) >> scalor)
-#define SETRATE(a) ((a) >> rate)
-#else
-#define FIXCOLOR(a) ((a) * scalor)
-#define UNFIXCOLOR(a) ((a) / scalor)
-#define SETRATE(a) ((a) / rate)
-#endif
-color onColor = { FIXCOLOR(255), FIXCOLOR(20), FIXCOLOR(0) },
-offColor = { FIXCOLOR(0) , FIXCOLOR(0), FIXCOLOR(255) },
-currentColor = offColor;
-bool flux = true;
+color onColor = { FIXCOLOR(255), FIXCOLOR(20), FIXCOLOR(0) };
+color offColor = { FIXCOLOR(0) , FIXCOLOR(0), FIXCOLOR(255) };
+color currentColor = offColor;
+color deltaColor;
+bool dirty = true;
+
+void SetColors(color &newOff, color &newOn)
+{
+   offColor.r = FIXCOLOR(newOff.r);
+   offColor.g = FIXCOLOR(newOff.g);
+   offColor.b = FIXCOLOR(newOff.b);
+   onColor.r = FIXCOLOR(newOn.r);
+   onColor.g = FIXCOLOR(newOn.g);
+   onColor.b = FIXCOLOR(newOn.b);
+   currentColor = offColor;
+   dirty = true;
+}
+
+void GetCurrentColor(color &current)
+{
+   current.r = UNFIXCOLOR(currentColor.r);
+   current.g = UNFIXCOLOR(currentColor.g);
+   current.b = UNFIXCOLOR(currentColor.b);
+}
+
+void SetScaleRate(STEPTYPE newScalor, STEPTYPE newRate)
+{
+   scalor = newScalor;
+   rate = newRate;
+   currentColor = offColor;
+   dirty = true;
+}
 
 void CheckUnderflow(COLORTYPE &delta, COLORTYPE &span, COLORTYPE &current, COLORTYPE &dest)
 {
@@ -56,54 +55,48 @@ void CheckUnderflow(COLORTYPE &delta, COLORTYPE &span, COLORTYPE &current, COLOR
    }
 }
 
-void UpdateColor()
+bool UpdateColor(bool on)
 {
-   color colorSpan;
-   color dest;
-   if (flux) {
-      dest = onColor;
+   if (dirty) {
+      color colorSpan;
       colorSpan.r = onColor.r - offColor.r;
       colorSpan.g = onColor.g - offColor.g;
       colorSpan.b = onColor.b - offColor.b;
+      deltaColor.r = SETRATE(colorSpan.r);
+      deltaColor.g = SETRATE(colorSpan.g);
+      deltaColor.b = SETRATE(colorSpan.b);
+      CheckUnderflow(deltaColor.r, colorSpan.r, currentColor.r, offColor.r);
+      CheckUnderflow(deltaColor.b, colorSpan.b, currentColor.b, offColor.b);
+      CheckUnderflow(deltaColor.g, colorSpan.g, currentColor.g, offColor.g);
+      dirty = false;
+   } 
+   color deltaColorDirection;
+   color dest;
+   if (on) {
+      dest = onColor;
+      deltaColorDirection = deltaColor;
    } else {
       dest = offColor;
-      colorSpan.r = offColor.r - onColor.r;
-      colorSpan.g = offColor.g - onColor.g;
-      colorSpan.b = offColor.b - onColor.b;
+      deltaColorDirection.r = -deltaColor.r;
+      deltaColorDirection.g = -deltaColor.g;
+      deltaColorDirection.b = -deltaColor.b;
    }
-   color deltaColor;
-   deltaColor.r = SETRATE(colorSpan.r);
-   deltaColor.g = SETRATE(colorSpan.g);
-   deltaColor.b = SETRATE(colorSpan.b);
-   CheckUnderflow(deltaColor.r, colorSpan.r, currentColor.r, dest.r);
-   CheckUnderflow(deltaColor.b, colorSpan.b, currentColor.b, dest.b);
-   CheckUnderflow(deltaColor.g, colorSpan.g, currentColor.g, dest.g);
-   DOTTYPE vectDot = (dest.r - currentColor.r) * deltaColor.r;
-   vectDot += (dest.g - currentColor.g) * deltaColor.g;
-   vectDot += (dest.b - currentColor.b) * deltaColor.b;
+   DOTTYPE vectDot = (dest.r - currentColor.r) * deltaColorDirection.r;
+   vectDot += (dest.g - currentColor.g) * deltaColorDirection.g;
+   vectDot += (dest.b - currentColor.b) * deltaColorDirection.b;
    if ( vectDot <= 0 ) {
       currentColor = dest;
-//      flux = !flux; // no flux given
+      return false;
    } else {
-      currentColor.r = currentColor.r + deltaColor.r;
-      currentColor.g = currentColor.g + deltaColor.g;
-      currentColor.b = currentColor.b + deltaColor.b;
+      currentColor.r = currentColor.r + deltaColorDirection.r;
+      currentColor.g = currentColor.g + deltaColorDirection.g;
+      currentColor.b = currentColor.b + deltaColorDirection.b;
    }
+#ifdef SECONDFLOOR
    // integers round down every cycle and dot products are not kind to integers.
    currentColor.r = currentColor.r < 0 ? 0 : currentColor.r;
    currentColor.g = currentColor.g < 0 ? 0 : currentColor.g;
    currentColor.b = currentColor.b < 0 ? 0 : currentColor.b;
-   color outputColor;
-   outputColor.r = UNFIXCOLOR(currentColor.r);
-   outputColor.g = UNFIXCOLOR(currentColor.g);
-   outputColor.b = UNFIXCOLOR(currentColor.b);
-//   flux = flux;
+#endif
+   return true;
 }
-
-int main()
-{
-   while (true) {
-      UpdateColor();
-   }
-}
-
