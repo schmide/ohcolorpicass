@@ -39,7 +39,7 @@ struct color {
 _COLORFADE_EXTERN bool UpdateColor(bool on = true);
 _COLORFADE_EXTERN void SetColors(color &newOff, color &newOn);
 _COLORFADE_EXTERN void GetCurrentColor(color &current);
-_COLORFADE_EXTERN void SetScaleRate(STEPTYPE newScalor, STEPTYPE newRate);
+_COLORFADE_EXTERN void SetScaleRate(STEPTYPE newScalor = SCALOR, STEPTYPE newRate = RATE);
 
 #ifndef _COLORFADE
 #define _COLORFADE

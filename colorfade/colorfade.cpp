@@ -87,9 +87,9 @@ bool UpdateColor(bool on)
       currentColor = dest;
       return false;
    } else {
-      currentColor.r = currentColor.r + deltaColorDirection.r;
-      currentColor.g = currentColor.g + deltaColorDirection.g;
-      currentColor.b = currentColor.b + deltaColorDirection.b;
+      currentColor.r += deltaColorDirection.r;
+      currentColor.g += deltaColorDirection.g;
+      currentColor.b += deltaColorDirection.b;
    }
 #ifdef SECONDFLOOR
    // integers round down every cycle and dot products are not kind to integers.
